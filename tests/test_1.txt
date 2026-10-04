@@ -4,6 +4,8 @@ ls /
 ls /docs
 ls /word
 cd /docs
+chown /docs
+chown /docs/word ar -R
 find / -name *.txt
 find / -type dir
 ls arbuz
