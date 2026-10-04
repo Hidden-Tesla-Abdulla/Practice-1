@@ -1,1 +1,1 @@
-python "../src/pr2.py" "VFS" "test_1.txt"
+python "src/pr2.py" "VFS" "tests/test_1.txt"
