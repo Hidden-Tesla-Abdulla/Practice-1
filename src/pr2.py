@@ -2,8 +2,13 @@ import os
 import socket
 import sys
 
+import getpass
+
+try:
+    username = os.getlogin()
+except:
+    username = getpass.getuser()
 hostname = socket.gethostname()
-username = os.getlogin() 
 
 def check_errors(answer):
     array = answer.split()
