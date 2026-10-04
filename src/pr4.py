@@ -3,7 +3,6 @@ import socket
 import sys
 import csv
 import base64
-import getpass
 
 
 class VFSNode:
@@ -122,12 +121,66 @@ class VirtualFileSystem:
             return target.name
         return list(target.children.keys())
 
+    def cd(self, path_str):
+        if not path_str:
+            self.cwd = self.root
+            return True
 
+        target = self.resolve_path(path_str)
+        if not target:
+            print(f"cd: {path_str}: No such file or directory")
+            return False
+        if target.type != 'dir':
+            print(f"cd: {path_str}: Not a directory")
+            return False
+
+        self.cwd = target
+        return True
+
+    def find(self, path, param, critea):
+        current = self.resolve_path(path)
+        result = list()
+        if not current:
+            print(f"find: cannot access '{path}': No such file or directory")
+            return
+        if critea.startswith("*") and param == "-name":
+            for child in current.children:
+                if current.children[child].type == "file" and child.endswith(critea[1:]):
+                    result.append(f"file_name: {child} -> path: {path[1:]}")
+                elif current.children[child].type == "dir":
+                    new_path = path  + "/" + child
+                    res = self.find(new_path, param, critea)
+                    if len(res) > 0:
+                        for el in res:
+                            result.append(el)
+        elif param == "type" and critea in ["dir", "file"]:
+            for child in current.children:
+                if current.children[child].type == critea:
+                    if len(path[1:]) > 0:
+                        result.append(f"{critea}_name: {child} -> path: {path[1:]}")
+                    else:
+                        result.append(f"{critea}_name: {child} -> path: {path}")
+                if current.children[child].type == "dir":
+                    new_path = path  + "/" + child
+                    res = self.find(new_path, param, critea)
+                    if len(res) > 0:
+                        for el in res:
+                            result.append(el)
+        return result
+
+    def pwd(self):
+        current = self.cwd
+        path = current.name
+        while current.parent != None:
+            current = current.parent
+            path = current.name + "/" + path
+        return path[1:]
+
+
+command_history = []
 hostname = socket.gethostname()
-try:
-    username = os.getlogin()
-except:
-    username = getpass.getuser()
+username = os.getlogin()
+
 # Инициализация VFS
 vfs = VirtualFileSystem()
 if len(sys.argv) > 1:
@@ -153,27 +206,35 @@ def check_errors(answer):
         perem.append(parser(el))
     return None in perem
 
+def add_history(command, result):
+    command_history.append(f"{command}: {result}")
 
 def conf_dump():
     if len(sys.argv) > 1:
         print(f"VFS = {sys.argv[1]}\n")
-    if len(sys.argv) > 2:
+        add_history("conf_dump: ", " ".join(sys.argv))
+    elif len(sys.argv) > 2:
+        add_history("conf_dump: ", " ".join(sys.argv))
         print(f"start_script = {sys.argv[2]}\n")
+    else:
+        add_history("conf_dump: ", " ".join(sys.argv))
 
 
-def repchik(array):
+def ls(array):
     path = array[0] if array else ""
     result = vfs.ls(path)
     if isinstance(result, str) and result.startswith("ls:"):
+        add_history("ls", result)
         print(result)
     else:
+        add_history("ls", " ".join(result))
         print(" ".join(result))
 
-def ls(array):
-    print("LS", *array)
 
 def cd(array):
-    print("CD", *array)
+    add_history(f"cd {array}", "")
+    path = array[0] if array else ""
+    vfs.cd(path)
 
 
 def work(answer):
@@ -192,16 +253,39 @@ def work(answer):
 
     command = array[0]
     if command == "ls":
-        ls(perem)
+        if len(perem) > 1:
+            print("ArgError")
+        else:
+            ls(perem)
     elif command == "cd":
-        cd(perem)
-    elif command == "rep":
-        repchik(perem)
+        if len(perem) > 1:
+            print("ArgError")
+        else:
+            cd(perem)
     elif command == "conf-dump":
         if len(array) > 1:
-            print("Слишком много аргументов")
+            print("ArgError")
         else:
             conf_dump()
+    elif command == "history":
+        if len(perem) > 1:
+            print("ArgError")
+        else:
+            for i in command_history:
+                print(i)
+    elif command == "find":
+        if len(perem) != 3:
+            print("ArgError")
+        else:
+            add_history("find", "\n      ".join(vfs.find(perem[0], perem[1], perem[2])))
+            for i in vfs.find(perem[0], perem[1], perem[2]):
+                print(i)
+    elif command == "pwd":
+        if len(perem) > 0:
+            print("ArgError")
+        else:
+            add_history("pwd", vfs.pwd())
+            print(vfs.pwd())
     else:
         print("Такой команды нет")
 
