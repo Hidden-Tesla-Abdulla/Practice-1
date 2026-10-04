@@ -1,1 +1,1 @@
-python "src/pr2.py" "VFS" "tests/test_1.txt"
+python "src/pr3.py" "tests/test_file_1.csv" "tests/test_1.txt"
