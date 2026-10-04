@@ -1,0 +1,3 @@
+ls $PATH arbudf
+cd arbuz
+conf-dump

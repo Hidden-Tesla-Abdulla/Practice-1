@@ -1,0 +1,4 @@
+ls $PATH
+cd arbuz
+conf-dump
+exit
