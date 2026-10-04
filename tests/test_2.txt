@@ -3,5 +3,6 @@ ls /docs
 ls /music
 cd /docs
 ls
+chown /docs/word user -R
 history
 pwd
