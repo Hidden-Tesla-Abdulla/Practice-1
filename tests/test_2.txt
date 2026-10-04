@@ -1,6 +1,7 @@
-rep
-rep /docs
-rep /word
-rep /docs/word
-rep /music
-rep /download
+ls
+ls /docs
+ls /music
+cd /docs
+ls
+history
+pwd
