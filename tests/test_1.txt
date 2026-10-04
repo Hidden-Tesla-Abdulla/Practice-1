@@ -1,4 +1,3 @@
-ls $PATH
-cd arbuz
 conf-dump
-exit
+rep
+ls arbuz

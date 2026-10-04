@@ -1,3 +1,6 @@
-ls $PATH arbudf
-cd arbuz
-conf-dump
+rep
+rep /docs
+rep /word
+rep /docs/word
+rep /music
+rep /download

@@ -1,0 +1,13 @@
+path,type,data
+/docs,dir,
+/pics,dir,
+/download,dir,
+/video,dir,
+/other,dir,
+/music,dir,
+/docs/word,dir,
+/docs/excel,dir,
+/docs/powerpoint,dir,
+/music/some_music,file,
+/video/more2004,file,
+/download/veseliiArbuz,file,

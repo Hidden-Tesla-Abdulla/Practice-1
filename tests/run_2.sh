@@ -1,0 +1,1 @@
+python "../src/pr3.py" "test_file_2.csv" "test_2.txt"
