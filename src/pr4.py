@@ -3,6 +3,7 @@ import socket
 import sys
 import csv
 import base64
+import getpass
 
 
 class VFSNode:
@@ -179,7 +180,10 @@ class VirtualFileSystem:
 
 command_history = []
 hostname = socket.gethostname()
-username = os.getlogin()
+try:
+    username = os.getlogin()
+except:
+    username = getpass.getuser()
 
 # Инициализация VFS
 vfs = VirtualFileSystem()
