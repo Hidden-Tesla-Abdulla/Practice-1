@@ -1,3 +1,9 @@
 conf-dump
-rep
+pwd
+ls /
+ls /docs
+ls /word
+cd /docs
+find / -name *.txt
+find / -type dir
 ls arbuz
