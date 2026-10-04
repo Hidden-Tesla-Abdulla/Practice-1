@@ -8,12 +8,13 @@ import getpass
 
 class VFSNode:
 
-    def __init__(self, name, node_type='dir', parent=None):
+    def __init__(self, name, node_type='dir', parent=None, owner=None):
         self.name = name
         self.type = node_type  # 'dir' или 'file'
         self.parent = parent  # Ссылка на родителя для навигации '..'
         self.children = {}  # Словарь {имя_дочки: VFSNode} для директорий
         self.content = b''  # Байтовое содержимое для файлов
+        self.owner = owner # Владелец
 
 
 class VirtualFileSystem:
@@ -177,6 +178,13 @@ class VirtualFileSystem:
             path = current.name + "/" + path
         return path[1:]
 
+    def chown(self, path, user, param=None):
+        current = self.resolve_path(path)
+        current.owner = user
+        if param == "-R":
+            if current.type == "dir":
+                for child in current.children.values():
+                    self.chown(path + "/" + child.name, user, param)
 
 command_history = []
 hostname = socket.gethostname()
@@ -281,7 +289,7 @@ def work(answer):
         if len(perem) != 3:
             print("ArgError")
         else:
-            add_history("find", "\n      ".join(vfs.find(perem[0], perem[1], perem[2])))
+            add_history(f"find {perem[0], perem[1], perem[2]}\n", "\n      ".join(vfs.find(perem[0], perem[1], perem[2])))
             for i in vfs.find(perem[0], perem[1], perem[2]):
                 print(i)
     elif command == "pwd":
@@ -290,6 +298,15 @@ def work(answer):
         else:
             add_history("pwd", vfs.pwd())
             print(vfs.pwd())
+    elif command == "chown":
+        if len(perem) > 3 or len(perem) < 2:
+            print("ArgError")
+        else:
+            add_history(f"chown {" ".join(perem)}", "")
+            if perem == 2:
+                vfs.chown(perem[0], perem[1])
+            else:
+                vfs.chown(perem[0], perem[1], perem[2])
     else:
         print("Такой команды нет")
 
