@@ -180,6 +180,9 @@ class VirtualFileSystem:
 
     def chown(self, path, user, param=None):
         current = self.resolve_path(path)
+        if not current:
+            print("Неверный путь")
+            return
         current.owner = user
         if param == "-R":
             if current.type == "dir":
