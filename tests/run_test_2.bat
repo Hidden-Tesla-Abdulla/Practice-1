@@ -1,0 +1,3 @@
+@echo off
+python "../src/pr2.py" "VFS" "test_2.txt"
+pause
